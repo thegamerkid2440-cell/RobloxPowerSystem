@@ -1,6 +1,42 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Set(p,enabled) p:SetAttribute("PowerPlayerControl",enabled==true) end
-P.Enable=P.Set
-function P.Disable(p) P.Set(p,false) end
-return P
+-- PowerSystem/doublejump.lua
+local Power = {}
+
+local Context = nil
+local state = {}
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player)
+    local humanoid = Context and Context.GetHumanoid and Context.GetHumanoid(player)
+    if not humanoid then
+        return false
+    end
+
+    state[player] = true
+    return true
+end
+
+function Power.Try(player)
+    local humanoid = Context and Context.GetHumanoid and Context.GetHumanoid(player)
+    local root = Context and Context.GetRoot and Context.GetRoot(player)
+    if not humanoid or not root then
+        return false
+    end
+
+    if humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+        return false
+    end
+
+    local boost = tonumber(Context.Config.DoubleJumpPower) or 70
+    root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X, boost, root.AssemblyLinearVelocity.Z)
+    return true
+end
+
+function Power.Disable(player)
+    state[player] = nil
+    return true
+end
+
+return Power

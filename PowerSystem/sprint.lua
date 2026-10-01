@@ -1,5 +1,23 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Enable(p,d) local h=C.Humanoid(p); if h then h.WalkSpeed=C.Config.SprintWalkSpeed; if d then task.delay(tonumber(d),function() if h.Parent then h.WalkSpeed=C.Config.DefaultWalkSpeed end end) end end end
-function P.Disable(p) local h=C.Humanoid(p); if h then h.WalkSpeed=C.Config.DefaultWalkSpeed end end
-return P
+-- PowerSystem/normalgravity.lua
+local Power = {}
+
+local Context = nil
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player)
+    Context.Workspace.Gravity = Context.Config.DefaultGravity
+    return true
+end
+
+function Power.Set(player)
+    return Power.Enable(player)
+end
+
+function Power.Disable(player)
+    return Power.Enable(player)
+end
+
+return Power

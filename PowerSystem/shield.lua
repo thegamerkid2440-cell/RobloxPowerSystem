@@ -1,5 +1,25 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Enable(p,d) local c=C.Character(p); if not c then return end; P.Disable(p); local f=Instance.new("ForceField"); f.Name="PowerShield"; f.Visible=true; f.Parent=c; if d~=false then task.delay(tonumber(d) or C.Config.ShieldDuration,function() if f.Parent then f:Destroy() end end) end end
-function P.Disable(p) local c=C.Character(p); if c then local f=c:FindFirstChild("PowerShield"); if f then f:Destroy() end end end
-return P
+-- PowerSystem/heal.lua
+local Power = {}
+
+local Context = nil
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player, amount)
+    local humanoid = Context and Context.GetHumanoid and Context.GetHumanoid(player)
+    if not humanoid then
+        return false
+    end
+
+    local healAmount = tonumber(amount) or 25
+    humanoid.Health = math.clamp(humanoid.Health + healAmount, 0, humanoid.MaxHealth)
+    return true
+end
+
+function Power.Heal(player, amount)
+    return Power.Enable(player, amount)
+end
+
+return Power

@@ -1,5 +1,43 @@
-local P={}; local C; local saved={}
-function P.Init(x) C=x end
-function P.Enable(p) local h=C.Humanoid(p); local r=C.Root(p); if h and r then saved[p]={ws=h.WalkSpeed,jp=h.JumpPower,anch=r.Anchored}; h.WalkSpeed=0; h.JumpPower=0; r.Anchored=true end end
-function P.Disable(p) local h=C.Humanoid(p); local r=C.Root(p); local s=saved[p]; if h and r and s then h.WalkSpeed=s.ws; h.JumpPower=s.jp; r.Anchored=s.anch; saved[p]=nil end end
-return P
+-- PowerSystem/glow.lua
+local Power = {}
+
+local Context = nil
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player, color)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    local highlight = character:FindFirstChild("PowerGlow")
+    if highlight then
+        highlight:Destroy()
+    end
+
+    local newHighlight = Instance.new("Highlight")
+    newHighlight.Name = "PowerGlow"
+    newHighlight.FillColor = color or Color3.fromRGB(255, 215, 0)
+    newHighlight.OutlineColor = newHighlight.FillColor
+    newHighlight.Parent = character
+    return true
+end
+
+function Power.Disable(player)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    local highlight = character:FindFirstChild("PowerGlow")
+    if highlight then
+        highlight:Destroy()
+    end
+
+    return true
+end
+
+return Power

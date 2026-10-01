@@ -1,6 +1,32 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Set(p,a) local h=C.Humanoid(p); if h then h.UseJumpPower=true; h.JumpPower=tonumber(a) or C.Config.DefaultJumpPower end end
-P.Enable=P.Set
-function P.Reset(p) P.Set(p,C.Config.DefaultJumpPower) end
-return P
+-- PowerSystem/walkspeed.lua
+local Power = {}
+
+local Context = nil
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Set(player, amount)
+    local humanoid = Context and Context.GetHumanoid and Context.GetHumanoid(player)
+    if not humanoid then
+        return false
+    end
+
+    humanoid.WalkSpeed = tonumber(amount) or Context.Config.DefaultWalkSpeed
+    return true
+end
+
+function Power.Enable(player, amount)
+    return Power.Set(player, amount)
+end
+
+function Power.Disable(player)
+    return Power.Set(player, Context.Config.DefaultWalkSpeed)
+end
+
+function Power.Reset(player)
+    return Power.Disable(player)
+end
+
+return Power

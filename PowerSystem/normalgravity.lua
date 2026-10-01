@@ -1,5 +1,19 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Enable() C.Workspace.Gravity=C.Config.DefaultGravity end
-P.Set=P.Enable; P.Disable=P.Enable
-return P
+-- PowerSystem/lowgravity.lua
+local Power = {}
+
+local Context = nil
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player)
+    Context.Workspace.Gravity = Context.Config.LowGravity
+    return true
+end
+
+function Power.Set(player)
+    return Power.Enable(player)
+end
+
+return Power

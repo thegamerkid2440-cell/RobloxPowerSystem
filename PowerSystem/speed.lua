@@ -1,7 +1,24 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Set(p,a) local h=C.Humanoid(p); if h then h.WalkSpeed=math.clamp(tonumber(a) or C.Config.DefaultWalkSpeed,0,100) end end
-function P.Enable(p,a) P.Set(p,a) end
-function P.Disable(p) P.Set(p,C.Config.DefaultWalkSpeed) end
-P.Reset=P.Disable
-return P
+-- PowerSystem/powers.lua
+-- Central config used by all modules.
+return {
+    DefaultWalkSpeed = 16,
+    DefaultJumpPower = 50,
+    DefaultFlightSpeed = 50,
+    DefaultDashPower = 75,
+    DefaultGravity = 196.2,
+    LowGravity = 50,
+    HighJumpPower = 100,
+    SuperJumpPower = 150,
+    SprintWalkSpeed = 26,
+    DashCooldown = 1,
+    DoubleJumpPower = 70,
+    ShieldDuration = 10,
+    TinyScale = 0.5,
+    GiantScale = 2,
+    DefaultSpinSpeed = 10,
+    RemoteName = "PowerSystemRemote",
+    AllowSelfUse = true,
+    AdminUserIds = {
+        [1] = true,
+    },
+}

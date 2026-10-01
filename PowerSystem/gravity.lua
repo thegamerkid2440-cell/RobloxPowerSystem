@@ -1,6 +1,56 @@
-local P={}; local C
-function P.Init(x) C=x end
-function P.Set(p,a) C.Workspace.Gravity=math.clamp(tonumber(a) or C.Config.DefaultGravity,0,1000) end
-function P.Reset() C.Workspace.Gravity=C.Config.DefaultGravity end
-function P.Launch(p,power) local r=C.Root(p); if r then r:ApplyImpulse(Vector3.new(0,tonumber(power) or C.Config.DefaultJumpPower,0)*r.AssemblyMass) end end
-return P
+-- PowerSystem/noclip.lua
+local Power = {}
+
+local Context = nil
+local activePlayers = {}
+
+function Power.Init(context)
+    Context = context
+
+    Context.RunService.RenderStepped:Connect(function()
+        for player, enabled in pairs(activePlayers) do
+            if enabled then
+                local character = Context.GetCharacter(player)
+                if character then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+function Power.Enable(player)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    activePlayers[player] = true
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+    return true
+end
+
+function Power.Disable(player)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    activePlayers[player] = nil
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = true
+        end
+    end
+    return true
+end
+
+return Power

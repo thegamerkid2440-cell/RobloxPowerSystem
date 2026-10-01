@@ -1,5 +1,53 @@
-local P={}; local C; local cache={}
-function P.Init(x) C=x end
-function P.Enable(p) local c=C.Character(p); if not c then return end; cache[p]={}; for _,v in ipairs(c:GetDescendants()) do if v:IsA("BasePart") or v:IsA("Decal") or v:IsA("Texture") then cache[p][v]=v.Transparency; v.Transparency=1 end end end
-function P.Disable(p) if cache[p] then for v,t in pairs(cache[p]) do if v.Parent then v.Transparency=t end end; cache[p]=nil end end
-return P
+-- PowerSystem/shield.lua
+local Power = {}
+
+local Context = nil
+local shields = {}
+
+function Power.Init(context)
+    Context = context
+end
+
+function Power.Enable(player, duration)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    if character:FindFirstChild("PowerShield") then
+        character.PowerShield:Destroy()
+    end
+
+    local forceField = Instance.new("ForceField")
+    forceField.Name = "PowerShield"
+    forceField.Visible = true
+    forceField.Parent = character
+    shields[player] = forceField
+
+    local seconds = tonumber(duration) or Context.Config.ShieldDuration
+    task.delay(seconds, function()
+        if shields[player] and shields[player].Parent then
+            shields[player]:Destroy()
+            shields[player] = nil
+        end
+    end)
+
+    return true
+end
+
+function Power.Disable(player)
+    local character = Context and Context.GetCharacter and Context.GetCharacter(player)
+    if not character then
+        return false
+    end
+
+    local shield = character:FindFirstChild("PowerShield")
+    if shield then
+        shield:Destroy()
+    end
+
+    shields[player] = nil
+    return true
+end
+
+return Power
